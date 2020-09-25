@@ -1,4 +1,3 @@
-
 import org.apache.commons.codec.digest.DigestUtils;
 
 import javax.imageio.ImageIO;
@@ -14,37 +13,38 @@ import java.util.Map;
 public class JdPicDateUtils {
 
     private static Map<String, BufferedImage> bufferedImageMap = null;
-    private static String[] picStrings = {
-            "0cafdec4d059a547d9b515132dfeda9c.png",
-            "2e752832dd5775fb9b85ac539c21edb3.png",
-            "5d2a20ff27057c1dc919c3546a015773.png",
-            "6bc516221904aac0638a49e593961bd7.png",
-            "18d2593513d903c71ca604f896b9163b.png",
-            "9803b41933ddf82d222462237e4c9bb3.png",
-            "67010e410cdaf071b5bf72fa35c1d448.png",
-            "c3d0065ead7e43da9c057c81137d419e.png",
-            "6c26390570b6062d423bc05e45898cbb.png",
-            "c20fdaa0906d123629bade0e436903ce.png"};
+    private static final String[] picStrings = {
+        "0cafdec4d059a547d9b515132dfeda9c.png",
+        "2e752832dd5775fb9b85ac539c21edb3.png",
+        "5d2a20ff27057c1dc919c3546a015773.png",
+        "6bc516221904aac0638a49e593961bd7.png",
+        "18d2593513d903c71ca604f896b9163b.png",
+        "9803b41933ddf82d222462237e4c9bb3.png",
+        "67010e410cdaf071b5bf72fa35c1d448.png",
+        "c3d0065ead7e43da9c057c81137d419e.png",
+        "6c26390570b6062d423bc05e45898cbb.png",
+        "c20fdaa0906d123629bade0e436903ce.png"
+    };
 
     public static Map<String, BufferedImage> getBufferedImageMap() {
         if (bufferedImageMap == null) {
             BufferedImage bi = null;
             InputStream in = null;
             bufferedImageMap = new HashMap<>();
-            for (int i = 0; i < picStrings.length; i++) {
+            for (String picString : picStrings) {
                 try {
-                    in = JdPicDateUtils.class.getClassLoader().getResourceAsStream("pic/" + picStrings[i]);
+                    in = JdPicDateUtils.class.getClassLoader().getResourceAsStream("pic/" + picString);
+                    assert in != null;
                     bi = ImageIO.read(in);
                 } catch (Exception e) {
 //                    LOG.error("bufferedImageMap创建出现异常" + e);
                 }
+                assert bi != null;
                 bufferedImageMap.put(getHash(bi), bi);
 //            }
             }
             try {
-                if (in != null) {
-                    in.close();
-                }
+                in.close();
             } catch (Exception e) {
 //                LOG.error("bufferedImageMap创建出现异常" + e);
             }
@@ -56,17 +56,17 @@ public class JdPicDateUtils {
         int[] rgb = new int[3];
         int height = bi.getHeight();
         int miny = bi.getMinY();
-        String hash_string = "";
+        StringBuilder hash_string = new StringBuilder();
         for (int j = miny; j < height; j++) {
             int pixel = bi.getRGB(0, j); // 下面三行代码将一个数字转换为RGB数字
             rgb[0] = (pixel & 0xff0000) >> 16;
             rgb[1] = (pixel & 0xff00) >> 8;
             rgb[2] = (pixel & 0xff);
-            hash_string += rgb[0];
-            hash_string += rgb[1];
-            hash_string += rgb[2];
+            hash_string.append(rgb[0]);
+            hash_string.append(rgb[1]);
+            hash_string.append(rgb[2]);
         }
-        return DigestUtils.md5Hex(hash_string);
+        return DigestUtils.md5Hex(hash_string.toString());
     }
 
     public static int getDistance(BufferedImage currentBi, Map<String, BufferedImage> bufferedImageMap, String y) {
@@ -101,5 +101,4 @@ public class JdPicDateUtils {
         Map<String, BufferedImage> bufferedImageMap = getBufferedImageMap();
         bufferedImageMap.get("1");
     }
-
 }

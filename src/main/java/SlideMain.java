@@ -7,7 +7,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import javax.imageio.ImageIO;
-import javax.script.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.HashMap;
@@ -20,8 +19,9 @@ import util.*;
  * @Date: 2019/2/25 0025 下午 22:23
  * @Version 1.0
  */
+
 public class SlideMain {
-    private Map<String, String> tempMap = new HashMap<>();
+    private final Map<String, String> tempMap = new HashMap<>();
     private Map<String, String> cookieMap = new HashMap<>();
 
     public int getPic() {
@@ -36,9 +36,8 @@ public class SlideMain {
             Map<String, String> baseMap = HtmlUtil.parseHtmlForm(formlogin);
             String slideAppId = baseMap.get("slideAppId");
             cookieMap = response.cookies();
-            int distance = downloadCaptcha();
 
-            return distance;
+            return downloadCaptcha();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -47,8 +46,8 @@ public class SlideMain {
 
     private int downloadCaptcha() {
         try {
-            InputStream in = null;
-            Connection.Response response = null;
+            InputStream in;
+            Connection.Response response;
             String callback = "jsonp_01677197385162" + (int) Math.floor(Math.random() * 10000);
             //暂时写死
             String eid = "SALSQTDTF7G3SFVX2GVRMRTPZNHPITUM23YFRZG7V75UCOHC5CH7PJOVO7IOVESKTLNE47IGAXADMDA4DPLDSQJDZI";
@@ -73,7 +72,7 @@ public class SlideMain {
             String body = response.body();
             body = StringUtils.substringBetween(body, callback + "(", ")");
             if (body == null) {
-                System.err.print("下载图片验证码失败");
+                System.err.println("下载图片验证码失败");
             }
             JSONObject jsonObject = JSON.parseObject(body);
             String message = jsonObject.getString("message");
@@ -88,15 +87,14 @@ public class SlideMain {
             Map<String, BufferedImage> bufferedImageMap = JdPicDateUtils.getBufferedImageMap();
             int x = JdPicDateUtils.getDistance(bi, bufferedImageMap, y);
             System.out.println("获得距离x:" + x);
-            int xx = (int) Math.floor(x * 278 / 360);
-            return xx;
+            return (int) Math.floor(x * 278.0 / 360);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return 0;
     }
 
-    private int checkCaptcha(int distance) {
+    private void checkCaptcha(int distance) {
         try {
             Connection.Response response = null;
             String callback = "jsonp_01677197385162" + (int) Math.floor(Math.random() * 10000);
@@ -104,7 +102,7 @@ public class SlideMain {
             String d = JdSlideEncrypt.encrypt(distance + "");
             String challenge = tempMap.get("challenge");
             //写死
-            String sessionid = "6983130332842014834";
+            String sessionId = "6983130332842014834";
             String testUsername = "13166666666";
             String url = "https://iv.jd.com/slide/s.html?" +
                     "d=" + d +
@@ -114,7 +112,7 @@ public class SlideMain {
                     "&scene=login" +
                     "&product=click-bind-suspend" +
                     "&e=" + eid +
-                    "&s=" + sessionid +
+                    "&s=" + sessionId +
                     "&o=" + testUsername +
                     "&lang=zh_CN" +
                     "&callback=" + callback;
@@ -135,7 +133,6 @@ public class SlideMain {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return 0;
     }
 
 

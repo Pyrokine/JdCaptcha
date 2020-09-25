@@ -2,6 +2,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.script.*;
 import java.io.InputStreamReader;
+import java.util.Objects;
 
 /**
  * @Author: cyz
@@ -20,13 +21,12 @@ public class JdSlideEncrypt {
             Bindings engineScope = engine.getBindings(ScriptContext.ENGINE_SCOPE);
             engineScope.put("window", engineScope);
             engineScope.put("navigator", engineScope);
-            InputStreamReader jsencryptFileReader = new InputStreamReader(JdSlideEncrypt.class.getClassLoader().getResourceAsStream("js/Slide.js"));
-            engine.eval(jsencryptFileReader);
-            jsencryptFileReader.close();
+            InputStreamReader jsEncryptFileReader = new InputStreamReader(Objects.requireNonNull(JdSlideEncrypt.class.getClassLoader().getResourceAsStream("js/Slide.js")));
+            engine.eval(jsEncryptFileReader);
+            jsEncryptFileReader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     public static String encrypt(String x) {
@@ -35,8 +35,7 @@ public class JdSlideEncrypt {
         }
         try {
             Invocable invoke = (Invocable) engine;
-            String result = (String) invoke.invokeFunction("getTrace", x);
-            return result;
+            return (String) invoke.invokeFunction("getTrace", x);
         } catch (Exception e) {
             e.printStackTrace();
         }
